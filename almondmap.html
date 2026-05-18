@@ -338,11 +338,7 @@ document.getElementById('map-img').onload = setViewH;
 
 function applyXform() {
   canvas.style.transform = `translate(${tx}px,${ty}px) scale(${sc})`;
-  // ピンは逆補正してサイズ固定
-  canvas.querySelectorAll('.pin').forEach(pin => {
-    pin.style.transform = `translate(-50%,-100%) scale(${1/sc})`;
-    pin.style.transformOrigin = 'bottom center';
-  });
+  updatePinPositions();
 }
 
 function clamp() {
@@ -548,23 +544,43 @@ async function markUnvisited(id) {
 }
 
 // RENDER MAP
+// ピンはwrap直下に配置し、canvasのscaleの影響を受けないようにする
 function renderMap() {
+  // 既存ピンを削除（canvas内とwrap内両方）
   canvas.querySelectorAll('.pin').forEach(e => e.remove());
+  wrap.querySelectorAll('.pin').forEach(e => e.remove());
   if (gpsEl) canvas.appendChild(gpsEl);
+
   houses.filter(h => h.mapKey === currentMapKey).forEach(h => {
     const pin = document.createElement('div');
     pin.className = 'pin ' + (h.visited ? 'visited' : 'unvisited');
     pin.id = 'pin-' + h.id;
-    pin.style.left = h.px + '%';
-    pin.style.top = h.py + '%';
-    pin.style.transform = `translate(-50%,-100%) scale(${1/sc})`;
-    pin.style.transformOrigin = 'bottom center';
     pin.innerHTML = h.visited ? '<div class="pin-body"><span>✓</span></div>' : '<div class="pin-body"></div>';
+    // 位置はupdatePinPositionsで設定
+    pin.style.position = 'absolute';
+    pin.style.zIndex = '10';
     pin.addEventListener('click', e => {
       e.stopPropagation();
       if (appMode === 'normal') openPopup(h.id);
     });
-    canvas.appendChild(pin);
+    wrap.appendChild(pin);
+  });
+  updatePinPositions();
+}
+
+// ピン位置をcanvasの現在のtx/ty/scから計算してwrap上に配置
+function updatePinPositions() {
+  const cw = canvas.offsetWidth;
+  const ch = canvas.offsetHeight;
+  houses.filter(h => h.mapKey === currentMapKey).forEach(h => {
+    const pin = document.getElementById('pin-' + h.id);
+    if (!pin) return;
+    // 地図上の%座標 → wrap上のpx座標
+    const x = tx + (h.px / 100) * cw * sc;
+    const y = ty + (h.py / 100) * ch * sc;
+    pin.style.left = x + 'px';
+    pin.style.top = y + 'px';
+    pin.style.transform = 'translate(-50%, -100%)';
   });
 }
 
