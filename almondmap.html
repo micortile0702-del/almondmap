@@ -35,9 +35,9 @@
   .prog-bg { height:5px; background:#e5e7eb; border-radius:3px; overflow:hidden; }
   .prog-fill { height:100%; background:linear-gradient(90deg,var(--accent),var(--accent2)); border-radius:3px; transition:width 0.5s; }
 
-  .gps-bar { background:#eff6ff; border-bottom:1px solid #bfdbfe; padding:7px 14px; display:flex; align-items:center; gap:8px; font-size:11px; color:#1d4ed8; }
-  .gps-dot { width:8px; height:8px; border-radius:50%; background:var(--accent); animation:blink 2s infinite; flex-shrink:0; }
-  .gps-btn { background:var(--accent); color:white; border:none; border-radius:6px; padding:4px 10px; font-size:11px; cursor:pointer; font-family:'Noto Sans JP',sans-serif; }
+  
+  
+  
 
   /* 地図セレクター */
   .map-selector { background:white; border-bottom:1px solid var(--border); padding:8px 14px; overflow-x:auto; display:flex; gap:8px; scrollbar-width:none; }
@@ -76,8 +76,6 @@
   .pin.visited .pin-lbl { background:var(--accent2); }
   .pin.moving-target .pin-lbl { background:var(--warning); }
 
-  .gps-marker { position:absolute; width:14px; height:14px; background:#ef4444; border-radius:50%; border:2px solid white; transform:translate(-50%,-50%); z-index:15; pointer-events:none; box-shadow:0 0 0 4px rgba(239,68,68,0.25); animation:gpspulse 2s infinite; }
-  @keyframes gpspulse { 0%,100%{box-shadow:0 0 0 4px rgba(239,68,68,0.2)} 50%{box-shadow:0 0 0 8px rgba(239,68,68,0.05)} }
 
   .fab { position:fixed; bottom:24px; right:16px; z-index:50; background:var(--accent); color:white; border:none; border-radius:50%; width:52px; height:52px; font-size:26px; cursor:pointer; box-shadow:0 4px 14px rgba(37,99,235,0.4); display:none; align-items:center; justify-content:center; line-height:1; }
   .fab:active { transform:scale(0.92); }
@@ -174,11 +172,7 @@
   <div class="prog-bg"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
 </div>
 
-<div class="gps-bar">
-  <div class="gps-dot"></div>
-  <span id="gps-txt" style="flex:1">位置情報を取得中...</span>
-  <button class="gps-btn" onclick="getGPS()">更新</button>
-</div>
+
 
 <!-- 地図セレクター -->
 <div class="map-selector" id="map-selector"></div>
@@ -246,7 +240,6 @@ let movingId = null;
 let deletingId = null;
 let nextId = 1;
 let isBusy = false;
-let gpsEl = null;
 
 // MAP SELECTOR
 function buildMapSelector() {
@@ -549,7 +542,7 @@ function renderMap() {
   // 既存ピンを削除（canvas内とwrap内両方）
   canvas.querySelectorAll('.pin').forEach(e => e.remove());
   wrap.querySelectorAll('.pin').forEach(e => e.remove());
-  if (gpsEl) canvas.appendChild(gpsEl);
+
 
   houses.filter(h => h.mapKey === currentMapKey).forEach(h => {
     const pin = document.createElement('div');
@@ -594,18 +587,6 @@ function updateStats() {
   document.getElementById('prog-fill').style.width = pct + '%';
 }
 
-// GPS
-function getGPS() {
-  if (!navigator.geolocation) { document.getElementById('gps-txt').textContent = '位置情報が使えません'; return; }
-  document.getElementById('gps-txt').textContent = '取得中...';
-  navigator.geolocation.getCurrentPosition(pos => {
-    const lat = pos.coords.latitude.toFixed(5), lng = pos.coords.longitude.toFixed(5);
-    document.getElementById('gps-txt').textContent = `現在地: ${lat}, ${lng}`;
-    if (!gpsEl) { gpsEl = document.createElement('div'); gpsEl.className = 'gps-marker'; }
-    gpsEl.style.left = '50%'; gpsEl.style.top = '50%';
-    canvas.appendChild(gpsEl);
-  }, () => { document.getElementById('gps-txt').textContent = '位置情報を取得できませんでした'; });
-}
 
 // TOAST
 let toastTimer = null;
@@ -621,7 +602,6 @@ buildMapSelector();
 switchMap('map1');
 setViewH();
 startPolling();
-getGPS();
 </script>
 </body>
 </html>
