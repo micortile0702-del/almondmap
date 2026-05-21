@@ -318,11 +318,16 @@ wrap.addEventListener('pointerup', e=>{
       const now=Date.now();
       const dtDist=Math.hypot(e.clientX-lastTapX,e.clientY-lastTapY);
       if(now-lastTapTime<350 && dtDist<30){
-        resetZoom(); lastTapTime=0;
+        resetZoom();
+        lastTapTime=0; // シングルタップ判定をキャンセル
       } else {
         lastTapTime=now; lastTapX=e.clientX; lastTapY=e.clientY;
         const cx=e.clientX, cy=e.clientY;
-        setTimeout(()=>{ if(Date.now()-lastTapTime>=300) handleTap(cx,cy); },320);
+        // ダブルタップ予約中はシングルタップを遅延判定
+        setTimeout(()=>{
+          // lastTapTimeが0になっていればダブルタップが発動済みなのでスキップ
+          if(lastTapTime!==0 && Date.now()-lastTapTime>=300) handleTap(cx,cy);
+        },320);
       }
     }
   }
