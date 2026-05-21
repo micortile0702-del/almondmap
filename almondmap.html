@@ -300,8 +300,11 @@ function handleTap(cx,cy) {
   if(hit!==null){ openPopup(hit); return; }
   const px=((cx-wr.left-tx)/sc/canvas.offsetWidth)*100;
   const py=((cy-wr.top-ty)/sc/canvas.offsetHeight)*100;
+  // まずローカルにマーカー追加してポップアップを開く
   const id=addMarker(px,py,false);
   openPopup(id);
+  // バックグラウンドで保存（ポップアップは即表示）
+  saveNewMarker(id, px, py);
 }
 
 // API
@@ -310,12 +313,19 @@ async function api(params) {
 }
 async function loadData() {
   if(isBusy) return;
+  isBusy=true;
   try {
     const r=await api({action:'getAll'});
     const data=await r.json();
-    // 既存マーカーを削除してリロード
-    wrap.querySelectorAll('.marker').forEach(e=>e.remove());
+    // サーバーデータで更新（差分更新）
+    const serverIds = new Set(data.map(row=>Number(row.id)));
+    // サーバーにないローカルマーカーを削除
+    markers.forEach(m=>{
+      if(!serverIds.has(m.id)){ removeMarkerEl(m.id); }
+    });
     markers=[];
+    // 現在の地図のマーカー表示をリセット
+    wrap.querySelectorAll('.marker').forEach(e=>e.remove());
     data.forEach(row=>{
       const m={
         id:Number(row.id),
@@ -331,6 +341,7 @@ async function loadData() {
     nextId=markers.length>0?Math.max(...markers.map(m=>m.id))+1:1;
     setSyncOk(); updateStats();
   } catch(e){ setSyncErr(); }
+  finally { isBusy=false; }
 }
 async function apiCall(params) {
   isBusy=true;
@@ -378,6 +389,19 @@ function addMarker(px,py,visited) {
   markers.push(m);
   if(m.visited) renderMarker(m);
   return m.id;
+}
+
+async function saveNewMarker(id, px, py) {
+  // バックグラウンド保存（UIはすでに更新済み）
+  const prevBusy = isBusy;
+  isBusy=true;
+  try {
+    await apiCall({action:'add', id, name:'', address:'',
+      px:px.toFixed(3), py:py.toFixed(3),
+      mapKey:currentMapKey, size:markerSize});
+  } finally {
+    isBusy=prevBusy;
+  }
 }
 
 function renderMarker(m) {
@@ -456,12 +480,16 @@ async function doAction() {
   if(selectedId===null) return;
   const m=markers.find(m=>m.id===selectedId);
   if(!m) return;
-  m.visited=!m.visited;
-  if(m.visited){ renderMarker(m); }
-  else{ removeMarkerEl(m.id); }
+  const newVisited = !m.visited;
+  m.visited = newVisited;
+  if(newVisited){ renderMarker(m); } else { removeMarkerEl(m.id); }
   updateStats(); closePopup();
-  showToast(m.visited?'✅ 訪問済みにしました':'↩ 未訪問に戻しました');
-  await apiCall({action:'update',id:m.id,visited:m.visited?'true':'false',time:''});
+  showToast(newVisited?'✅ 訪問済みにしました':'↩ 未訪問に戻しました');
+  // バックグラウンド保存
+  const prevBusy=isBusy; isBusy=true;
+  try {
+    await apiCall({action:'update',id:m.id,visited:newVisited?'true':'false',time:''});
+  } finally { isBusy=prevBusy; }
 }
 function doDelete() {
   if(selectedId===null) return;
@@ -480,7 +508,10 @@ async function confirmDelete() {
   removeMarkerEl(id);
   closeConfirm(); updateStats();
   showToast('🗑️ マークを削除しました');
-  await apiCall({action:'delete',id});
+  const prevBusy=isBusy; isBusy=true;
+  try {
+    await apiCall({action:'delete',id});
+  } finally { isBusy=prevBusy; }
 }
 
 // STATS
