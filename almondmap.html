@@ -210,7 +210,8 @@ let currentMapKey = 'map1';
 let selectedId = null;
 let deletingId = null;
 let nextId = 1;
-let isBusy = false;
+let isSaving = false;  // API保存中フラグ（ポーリングとは独立）
+let isBusy = false;   // ポーリング実行中フラグ
 
 // ZOOM & PAN
 let ptrs = {};
@@ -312,7 +313,7 @@ async function api(params) {
   return fetch(API+'?'+new URLSearchParams(params),{redirect:'follow'});
 }
 async function loadData() {
-  if(isBusy) return;
+  if(isBusy || isSaving) return;  // 保存中またはポーリング中はスキップ
   isBusy=true;
   try {
     const r=await api({action:'getAll'});
@@ -351,7 +352,7 @@ async function apiCall(params) {
 }
 function startPolling() {
   loadData();
-  setInterval(()=>{if(!isBusy) loadData();},10000);
+  setInterval(()=>{ if(!isBusy && !isSaving) loadData(); }, 8000);
 }
 function setSyncOk() {
   document.getElementById('sync-bar').className='sync-bar ok';
@@ -392,15 +393,13 @@ function addMarker(px,py,visited) {
 }
 
 async function saveNewMarker(id, px, py) {
-  // バックグラウンド保存（UIはすでに更新済み）
-  const prevBusy = isBusy;
-  isBusy=true;
+  isSaving=true;
   try {
     await apiCall({action:'add', id, name:'', address:'',
       px:px.toFixed(3), py:py.toFixed(3),
       mapKey:currentMapKey, size:markerSize});
   } finally {
-    isBusy=prevBusy;
+    isSaving=false;
   }
 }
 
@@ -485,11 +484,10 @@ async function doAction() {
   if(newVisited){ renderMarker(m); } else { removeMarkerEl(m.id); }
   updateStats(); closePopup();
   showToast(newVisited?'✅ 訪問済みにしました':'↩ 未訪問に戻しました');
-  // バックグラウンド保存
-  const prevBusy=isBusy; isBusy=true;
+  isSaving=true;
   try {
     await apiCall({action:'update',id:m.id,visited:newVisited?'true':'false',time:''});
-  } finally { isBusy=prevBusy; }
+  } finally { isSaving=false; }
 }
 function doDelete() {
   if(selectedId===null) return;
@@ -508,10 +506,10 @@ async function confirmDelete() {
   removeMarkerEl(id);
   closeConfirm(); updateStats();
   showToast('🗑️ マークを削除しました');
-  const prevBusy=isBusy; isBusy=true;
+  isSaving=true;
   try {
     await apiCall({action:'delete',id});
-  } finally { isBusy=prevBusy; }
+  } finally { isSaving=false; }
 }
 
 // STATS
