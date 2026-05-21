@@ -247,13 +247,26 @@ function resetZoom() {
   applyXform();
 }
 
+let pinchEndTime = 0;  // ピンチ終了時刻
+const PINCH_COOLDOWN = 300; // ピンチ後のパン抑制時間(ms)
+
 wrap.addEventListener('pointerdown', e=>{
   e.preventDefault();
   wrap.setPointerCapture(e.pointerId);
   ptrs[e.pointerId]={x:e.clientX,y:e.clientY};
   const n=Object.keys(ptrs).length;
-  if(n===1){ tapX=e.clientX;tapY=e.clientY;tapTime=Date.now();panStartTx=tx;panStartTy=ty;isPinching=false; }
-  if(n===2){ isPinching=true; const [a,b]=Object.values(ptrs); pinchStartDist=Math.hypot(a.x-b.x,a.y-b.y); pinchStartSc=sc; }
+  if(n===1){
+    tapX=e.clientX; tapY=e.clientY; tapTime=Date.now();
+    // ピンチ直後はパン開始位置をリセット（現在位置から開始）
+    panStartTx=tx; panStartTy=ty;
+    isPinching=false;
+  }
+  if(n===2){
+    isPinching=true;
+    const [a,b]=Object.values(ptrs);
+    pinchStartDist=Math.hypot(a.x-b.x,a.y-b.y);
+    pinchStartSc=sc;
+  }
 },{passive:false});
 
 wrap.addEventListener('pointermove', e=>{
@@ -261,19 +274,44 @@ wrap.addEventListener('pointermove', e=>{
   ptrs[e.pointerId]={x:e.clientX,y:e.clientY};
   const vals=Object.values(ptrs);
   if(vals.length===2){
+    // ピンチズーム
     const [a,b]=vals;
     const dist=Math.hypot(a.x-b.x,a.y-b.y);
     zoomAt((a.x+b.x)/2,(a.y+b.y)/2,pinchStartSc*dist/pinchStartDist);
   } else if(vals.length===1){
-    tx=panStartTx+(e.clientX-tapX); ty=panStartTy+(e.clientY-tapY);
+    // ピンチ直後のパンは無視（クールダウン期間）
+    if(Date.now()-pinchEndTime < PINCH_COOLDOWN) return;
+    tx=panStartTx+(e.clientX-tapX);
+    ty=panStartTy+(e.clientY-tapY);
     clamp(); applyXform();
   }
 },{passive:true});
 
 wrap.addEventListener('pointerup', e=>{
   const had=!!ptrs[e.pointerId];
+  const wasTwo = Object.keys(ptrs).length === 2;
   delete ptrs[e.pointerId];
-  if(had && Object.keys(ptrs).length===0 && !isPinching){
+  const remaining = Object.keys(ptrs).length;
+
+  // 2本指→1本指になった瞬間：ピンチ終了を記録
+  if(wasTwo && remaining === 1){
+    pinchEndTime = Date.now();
+    isPinching = true; // まだピンチ中扱い
+    // 残った1本指のパン開始位置を現在位置にリセット
+    const rem = Object.values(ptrs)[0];
+    tapX = rem.x; tapY = rem.y;
+    panStartTx = tx; panStartTy = ty;
+    return;
+  }
+
+  if(had && remaining===0){
+    // 全指離れた
+    const wasPinch = isPinching;
+    isPinching = false;
+    if(wasPinch){
+      pinchEndTime = Date.now();
+      return; // ピンチ後はタップ判定しない
+    }
     const moved=Math.hypot(e.clientX-tapX,e.clientY-tapY);
     const elapsed=Date.now()-tapTime;
     if(moved<TAP_DIST && elapsed<TAP_MS){
@@ -288,10 +326,12 @@ wrap.addEventListener('pointerup', e=>{
       }
     }
   }
-  if(Object.keys(ptrs).length===0) isPinching=false;
 },{passive:true});
 
-wrap.addEventListener('pointercancel',e=>{ delete ptrs[e.pointerId]; if(Object.keys(ptrs).length===0) isPinching=false; },{passive:true});
+wrap.addEventListener('pointercancel',e=>{
+  delete ptrs[e.pointerId];
+  if(Object.keys(ptrs).length===0){ isPinching=false; pinchEndTime=Date.now(); }
+},{passive:true});
 wrap.addEventListener('wheel',e=>{ e.preventDefault(); zoomAt(e.clientX,e.clientY,sc*(e.deltaY<0?1.12:0.9)); },{passive:false});
 
 // TAP
