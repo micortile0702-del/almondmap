@@ -563,6 +563,14 @@ function closePopup() {
   document.getElementById('sheet').style.transform='translateY(100%)';
   setTimeout(()=>{document.getElementById('overlay').style.display='none';},300);
   selectedId=null;
+  // ポインター状態を完全リセット
+  ptrs={};
+  isPinching=false;
+  pinchEndTime=Date.now();
+  lastPinchDist=0;
+  lastTapTime=0;
+  lastTapX=0;
+  lastTapY=0;
 }
 async function doAction() {
   if(selectedId===null) return;
@@ -621,6 +629,14 @@ function closeMemoEdit() {
   const sh=document.getElementById('memo-sheet');
   sh.style.transform='translateY(100%)';
   setTimeout(()=>{document.getElementById('memo-overlay').style.display='none';},300);
+  // ポインター状態を完全リセット
+  ptrs={};
+  isPinching=false;
+  pinchEndTime=Date.now();
+  lastPinchDist=0;
+  lastTapTime=0;
+  lastTapX=0;
+  lastTapY=0;
 }
 async function saveMemo() {
   const m=markers.find(m=>m.id===selectedId);
