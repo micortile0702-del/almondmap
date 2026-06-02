@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0, user-scalable=no">
 <title>奉仕マップ</title>
 <style>
   :root {
@@ -186,7 +186,7 @@
     <div style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:12px;">📝 メモを編集</div>
     <div style="font-size:11px;color:var(--text-dim);margin-bottom:8px;">部屋番号や特記事項などを入力してください</div>
     <textarea id="memo-input"
-      style="width:100%;height:100px;padding:12px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;font-family:inherit;color:var(--text);background:white;resize:none;outline:none;line-height:1.6;"
+      style="width:100%;height:100px;padding:12px;border:1.5px solid var(--border);border-radius:10px;font-size:16px;font-family:inherit;color:var(--text);background:white;resize:none;outline:none;line-height:1.6;"
       placeholder="例：101・203・305号室"></textarea>
     <div class="btn-row" style="margin-top:12px;">
       <button class="btn btn-close" onclick="closeMemoEdit()">キャンセル</button>
@@ -240,6 +240,7 @@ let deletingId = null;
 let nextId = 1;
 let isSaving = false;  // API保存中フラグ（ポーリングとは独立）
 let isBusy = false;   // ポーリング実行中フラグ
+let savedSc = null, savedTx = 0, savedTy = 0;  // メモ編集前のズーム状態保存
 
 // ZOOM & PAN
 let ptrs = {};
@@ -618,6 +619,8 @@ function updateStats() {
 function openMemoEdit() {
   const m=markers.find(m=>m.id===selectedId);
   if(!m) return;
+  // ズーム状態を保存（iOSが自動ズームするため）
+  savedSc=sc; savedTx=tx; savedTy=ty;
   document.getElementById('memo-input').value=m.memo||'';
   const ov=document.getElementById('memo-overlay');
   const sh=document.getElementById('memo-sheet');
@@ -628,6 +631,12 @@ function openMemoEdit() {
 function closeMemoEdit() {
   const sh=document.getElementById('memo-sheet');
   sh.style.transform='translateY(100%)';
+  // メモ編集前のズーム状態を復元
+  if(savedSc !== null) {
+    sc=savedSc; tx=savedTx; ty=savedTy;
+    applyXform();
+    savedSc=null;
+  }
   setTimeout(()=>{document.getElementById('memo-overlay').style.display='none';},300);
   // ポインター状態を完全リセット
   ptrs={};
