@@ -400,8 +400,25 @@ async function handleTap(cx,cy) {
 }
 
 // API
-async function api(params) {
-  return fetch(API+'?'+new URLSearchParams(params),{redirect:'follow'});
+async function api(params, retries = 2) {
+  const url = API + '?' + new URLSearchParams(params);
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10秒でタイムアウト
+    try {
+      const res = await fetch(url, {redirect:'follow', signal: controller.signal});
+      clearTimeout(timeoutId);
+      if (res.ok) return res;
+      // ステータス異常 → リトライ対象
+    } catch (e) {
+      clearTimeout(timeoutId);
+      // タイムアウト・通信失敗 → リトライ対象
+    }
+    if (attempt < retries) {
+      await new Promise(r => setTimeout(r, 1000)); // 1秒待って再試行
+    }
+  }
+  throw new Error('Network error after retries');
 }
 async function loadData() {
   if(isBusy || isSaving) return;  // 保存中またはポーリング中はスキップ
@@ -437,14 +454,19 @@ async function loadData() {
   finally { isBusy=false; }
 }
 async function apiCall(params) {
-  isBusy=true;
   try{ await api(params); }
-  catch(e){ showToast('⚠️ 通信エラー'); }
-  finally{ isBusy=false; }
+  catch(e){
+    showToast('⚠️ 通信に失敗しました（3回再試行済み）');
+    throw e; // 呼び出し元でも失敗を検知できるようにする
+  }
 }
-function startPolling() {
-  loadData();
-  setInterval(()=>{ if(!isBusy && !isSaving) loadData(); }, 8000);
+async function startPolling() {
+  while (true) {
+    if (!isSaving) {
+      await loadData();
+    }
+    await new Promise(r => setTimeout(r, 8000)); // 完了後に8秒待ってから次回実行
+  }
 }
 function setSyncOk() {
   document.getElementById('sync-bar').className='sync-bar ok';
