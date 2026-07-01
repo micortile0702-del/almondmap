@@ -381,21 +381,17 @@ async function handleTap(cx,cy) {
   if(hit!==null){ openPopup(hit); return; }
   const px=((cx-wr.left-tx)/sc/canvas.offsetWidth)*100;
   const py=((cy-wr.top-ty)/sc/canvas.offsetHeight)*100;
-  // 保存中トースト表示
-  showToast('保存中...');
-  // 先にIDを確保
+  // ローカルにすぐ追加してポップアップ表示
   const id=nextId++;
   const m={id,px,py,size:markerSize,visited:false,mapKey:currentMapKey,memo:''};
   markers.push(m);
-  // 保存完了を待ってからポップアップ表示
+  openPopup(id);
+  // バックグラウンドで保存
   isSaving=true;
   try {
     await apiCall({action:'add',id,name:'',address:'',
       px:px.toFixed(3),py:py.toFixed(3),
       mapKey:currentMapKey,size:markerSize,memo:''});
-    // 保存完了後はポップアップのみ表示（未訪問マーカーは描画しない仕様）
-    updateStats();
-    openPopup(id);
   } catch(e) {
     // 保存失敗時はローカルからも削除
     markers=markers.filter(m=>m.id!==id);
