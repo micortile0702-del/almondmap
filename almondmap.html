@@ -271,8 +271,16 @@ function clamp() {
   tx = iw>wr.width ? Math.min(0,Math.max(wr.width-iw,tx)) : (wr.width-iw)/2;
   ty = ih>wr.height ? Math.min(0,Math.max(wr.height-ih,ty)) : (wr.height-ih)/2;
 }
+function fitScale() {
+  const wr=wrap.getBoundingClientRect();
+  const iw=canvas.offsetWidth, ih=canvas.offsetHeight;
+  if(!iw||!ih) return 1;
+  return Math.min(wr.width/iw,wr.height/ih);
+}
 function zoomAt(cx,cy,newSc) {
-  newSc=Math.min(5,Math.max(1,newSc));
+  const minSc=fitScale();            // 最小倍率＝画面にちょうど収まる倍率
+  const maxSc=Math.max(5,minSc*8);   // 最大倍率
+  newSc=Math.min(maxSc,Math.max(minSc,newSc));
   const wr=wrap.getBoundingClientRect();
   const px=cx-wr.left, py=cy-wr.top;
   tx=px-(px-tx)*newSc/sc; ty=py-(py-ty)*newSc/sc;
