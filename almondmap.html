@@ -15,16 +15,17 @@
     --green-mid: #2d8a3e;
     --orange: #e07020;
     --text: #3a2e1e;
-    --text-dim: #7a6a52;
+    --text-dim: #6b5b43;
     --border: rgba(74,55,40,0.15);
     --radius: 12px;
   }
-  * { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; user-select:none; }
+  * { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; user-select:none; -webkit-user-select:none; }
+  textarea { user-select:text; -webkit-user-select:text; }
   html { touch-action:manipulation; overscroll-behavior:none; }
-  body { font-family:'Hiragino Sans','Noto Sans JP',sans-serif; background:var(--earth-bg); color:var(--text); height:100dvh; display:flex; flex-direction:column; overflow:hidden; touch-action:manipulation; overscroll-behavior:none; }
+  body { font-family:'Hiragino Sans','Noto Sans JP',sans-serif; background:var(--earth-bg); color:var(--text); height:100vh; height:100dvh; display:flex; flex-direction:column; overflow:hidden; touch-action:manipulation; overscroll-behavior:none; }
 
   /* SYNC */
-  .sync-bar { padding:5px 14px; font-size:11px; display:flex; align-items:center; gap:6px; background:#fef9c3; border-bottom:1px solid #fde047; color:#854d0e; flex-shrink:0; transition:all 0.3s; }
+  .sync-bar { padding:6px 14px; font-size:12px; display:flex; align-items:center; gap:6px; background:#fef9c3; border-bottom:1px solid #fde047; color:#854d0e; flex-shrink:0; transition:all 0.3s; }
   .sync-bar.ok { background:#f0fdf4; border-color:#bbf7d0; color:#166534; }
   .sync-bar.err { background:#fef2f2; border-color:#fecaca; color:#991b1b; }
   .sync-dot { width:7px; height:7px; border-radius:50%; background:#d97706; flex-shrink:0; animation:blink 2s infinite; }
@@ -34,23 +35,23 @@
   /* HEADER */
   .header { background:var(--earth-dark); padding:10px 16px; display:flex; align-items:center; justify-content:space-between; flex-shrink:0; }
   .header-title { font-size:15px; font-weight:700; color:#f0e8d8; letter-spacing:0.06em; }
-  .header-sub { font-size:10px; color:var(--earth-light); margin-top:1px; }
+  .header-sub { font-size:12px; color:var(--earth-light); margin-top:1px; }
   .stat-val { font-size:20px; font-weight:700; font-family:monospace; color:#a8d8a8; line-height:1; text-align:center; }
-  .stat-lbl { font-size:9px; color:rgba(240,232,216,0.55); text-align:center; }
+  .stat-lbl { font-size:11px; color:rgba(240,232,216,0.85); text-align:center; }
 
   /* MAP SELECTOR */
   .map-selector { background:var(--earth-surface); border-bottom:1px solid var(--border); padding:7px 14px; overflow-x:auto; display:flex; gap:7px; scrollbar-width:none; flex-shrink:0; }
   .map-selector::-webkit-scrollbar { display:none; }
-  .map-btn { flex-shrink:0; padding:5px 13px; border-radius:20px; border:1.5px solid var(--border); background:white; color:var(--text-dim); font-size:12px; font-weight:500; cursor:pointer; white-space:nowrap; transition:all 0.15s; }
+  .map-btn { flex-shrink:0; padding:9px 15px; border-radius:22px; border:1.5px solid var(--border); background:white; color:var(--text-dim); font-size:14px; font-weight:500; cursor:pointer; white-space:nowrap; transition:all 0.15s; }
   .map-btn.active { background:var(--earth-dark); border-color:var(--earth-dark); color:#f0e8d8; font-weight:700; }
 
   /* TOOLBAR */
   .toolbar { background:var(--earth-surface); border-bottom:1px solid var(--border); padding:7px 14px; display:flex; align-items:center; gap:8px; flex-shrink:0; }
-  .size-ctrl { display:flex; align-items:center; gap:8px; font-size:11px; color:var(--text-dim); flex:1; }
+  .size-ctrl { display:flex; align-items:center; gap:8px; font-size:13px; color:var(--text-dim); flex:1; }
   .size-slider { flex:1; max-width:120px; accent-color:var(--green-mid); cursor:pointer; }
 
   /* MAP */
-  .map-attribution { position:absolute; right:6px; bottom:6px; font-size:10px; color:#fff; background:rgba(0,0,0,0.45); padding:2px 6px; border-radius:4px; pointer-events:none; z-index:5; }
+  .map-attribution { position:absolute; right:6px; bottom:36px; font-size:10px; color:#fff; background:rgba(0,0,0,0.45); padding:2px 6px; border-radius:4px; pointer-events:none; z-index:5; }
   .map-wrap { flex:1; position:relative; overflow:hidden; background:#c8bfaa; touch-action:none; }
   .map-canvas { position:absolute; top:0; left:0; transform-origin:0 0; will-change:transform; }
   .map-img { display:block; max-width:none; pointer-events:none; }
@@ -70,6 +71,7 @@
     background:var(--green-dark);
     border:3px solid var(--green-mid);
   }
+  .marker.pending { opacity:0.6; }
   .marker.has-memo {
     background:#c8a820;
     border:3px solid #a88010;
@@ -79,37 +81,38 @@
   .hint-bar {
     position:absolute; bottom:0; left:0; right:0;
     background:rgba(74,55,40,0.8); backdrop-filter:blur(4px);
-    color:rgba(240,232,216,0.9); font-size:11px;
+    color:rgba(240,232,216,0.95); font-size:12px;
     padding:7px 14px; display:flex; align-items:center; gap:8px;
     z-index:20; pointer-events:none;
   }
   .hint-dot { width:7px; height:7px; border-radius:50%; background:#a8d8a8; flex-shrink:0; animation:blink 2s infinite; }
 
   /* POPUP */
-  .overlay { display:none; position:fixed; inset:0; background:rgba(58,46,30,0.45); backdrop-filter:blur(3px); z-index:100; }
+  .overlay { display:none; position:fixed; top:0; right:0; bottom:0; left:0; background:rgba(58,46,30,0.45); backdrop-filter:blur(3px); z-index:100; }
   .sheet {
     position:absolute; bottom:0; left:0; right:0;
     background:var(--earth-bg); border-radius:20px 20px 0 0;
     padding:20px 20px 44px;
+    max-height:90vh; max-height:90dvh; overflow-y:auto;
     transform:translateY(100%);
-    transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    transition:transform 0.3s cubic-bezier(0.2,0.8,0.2,1);
     box-shadow:0 -4px 24px rgba(58,46,30,0.2);
   }
   .sheet-handle { width:40px; height:4px; background:rgba(92,74,42,0.2); border-radius:2px; margin:0 auto 18px; }
   .status-pill { display:flex; align-items:center; gap:10px; padding:12px 16px; border-radius:12px; margin-bottom:14px; font-size:14px; font-weight:600; }
   .status-pill.visited { background:rgba(26,107,42,0.12); color:var(--green-dark); }
-  .status-pill.unvisited { background:rgba(224,112,32,0.1); color:var(--orange); }
+  .status-pill.unvisited { background:rgba(224,112,32,0.12); color:#9a4a0c; }
   .status-dot { width:12px; height:12px; border-radius:50%; flex-shrink:0; }
   .btn-row { display:flex; gap:8px; margin-bottom:8px; }
-  .btn { flex:1; padding:13px; border:none; border-radius:var(--radius); font-size:13px; font-weight:700; cursor:pointer; font-family:inherit; transition:transform 0.1s; }
+  .btn { flex:1; padding:15px; border:none; border-radius:var(--radius); font-size:15px; font-weight:700; cursor:pointer; font-family:inherit; transition:transform 0.1s; }
   .btn:active { transform:scale(0.96); }
   .btn-close { background:var(--earth-surface); color:var(--text-dim); border:1px solid var(--border); }
   .btn-visit { background:var(--green-dark); color:white; }
-  .btn-unvisit { background:#fef3c7; color:var(--orange); }
-  .btn-delete { flex:1; padding:10px; border:1.5px solid rgba(168,80,48,0.25); border-radius:var(--radius); background:rgba(168,80,48,0.07); color:#a85030; font-size:12px; font-weight:600; cursor:pointer; font-family:inherit; }
+  .btn-unvisit { background:#fef3c7; color:#9a4a0c; }
+  .btn-delete { flex:1; padding:14px; border:1.5px solid rgba(168,80,48,0.25); border-radius:var(--radius); background:rgba(168,80,48,0.07); color:#8a3a1e; font-size:14px; font-weight:600; cursor:pointer; font-family:inherit; }
 
   /* CONFIRM */
-  .confirm-wrap { position:fixed; inset:0; background:rgba(0,0,0,0.5); backdrop-filter:blur(4px); z-index:200; display:flex; align-items:center; justify-content:center; padding:20px; opacity:0; pointer-events:none; transition:opacity 0.2s; }
+  .confirm-wrap { position:fixed; top:0; right:0; bottom:0; left:0; background:rgba(0,0,0,0.5); backdrop-filter:blur(4px); z-index:200; display:flex; align-items:center; justify-content:center; padding:20px; opacity:0; pointer-events:none; transition:opacity 0.2s; }
   .confirm-wrap.open { opacity:1; pointer-events:all; }
   .confirm-box { background:var(--earth-bg); border-radius:16px; padding:24px; width:100%; max-width:300px; text-align:center; transform:scale(0.9); transition:transform 0.25s cubic-bezier(0.34,1.56,0.64,1); }
   .confirm-wrap.open .confirm-box { transform:scale(1); }
@@ -117,7 +120,7 @@
   .confirm-msg { font-size:15px; font-weight:600; margin-bottom:6px; color:var(--text); }
   .confirm-sub { font-size:12px; color:var(--text-dim); margin-bottom:20px; }
 
-  .toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(100px); background:var(--earth-dark); color:#f0e8d8; border-radius:10px; padding:10px 18px; font-size:13px; z-index:300; transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1); white-space:nowrap; pointer-events:none; }
+  .toast { position:fixed; top:16px; left:50%; transform:translateX(-50%) translateY(-120px); max-width:92vw; white-space:normal; text-align:center; background:var(--earth-dark); color:#f0e8d8; border-radius:10px; padding:10px 18px; font-size:13px; z-index:300; transition:transform 0.3s cubic-bezier(0.2,0.8,0.2,1); pointer-events:none; }
   .toast.show { transform:translateX(-50%) translateY(0); }
 </style>
 </head>
@@ -135,7 +138,7 @@
   </div>
   <div>
     <div class="stat-val" id="cnt-v">-</div>
-    <div class="stat-lbl">訪問済</div>
+    <div class="stat-lbl" id="cnt-lbl">訪問済</div>
   </div>
 </div>
 
@@ -146,7 +149,7 @@
     <span>マーカーの大きさ</span>
     <input type="range" class="size-slider" id="size-slider"
       min="20" max="52" value="32" step="4"
-      oninput="markerSize=Number(this.value)">
+      oninput="setMarkerSize(this.value)">
   </div>
 </div>
 
@@ -157,12 +160,12 @@
   <div class="map-attribution">地図：国土地理院</div>
   <div class="hint-bar">
     <div class="hint-dot"></div>
-    <span>タップして訪問済マーク / ダブルタップで地図リセット</span>
+    <span>地図をタップ →「訪問済にする」 / ダブルタップで全体表示</span>
   </div>
 </div>
 
 <!-- POPUP -->
-<div class="overlay" id="overlay" onclick="closePopup()">
+<div class="overlay" id="overlay" onclick="overlayTap(event)">
   <div class="sheet" id="sheet" onclick="event.stopPropagation()">
     <div class="sheet-handle"></div>
     <div class="status-pill" id="status-pill">
@@ -175,7 +178,7 @@
     </div>
     <!-- メモ表示エリア -->
     <div id="memo-display" style="display:none;margin-bottom:8px;padding:10px 12px;background:rgba(200,168,32,0.12);border:1.5px solid rgba(200,168,32,0.4);border-radius:10px;font-size:13px;color:var(--text);line-height:1.5;"></div>
-    <div class="btn-row">
+    <div class="btn-row" id="sub-row">
       <button class="btn-delete" onclick="doDelete()">🗑️ 削除</button>
       <button class="btn" id="memo-btn" onclick="openMemoEdit()" style="flex:2;padding:10px;border:1.5px solid rgba(92,74,42,0.2);border-radius:var(--radius);background:rgba(92,74,42,0.07);color:var(--text-dim);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">📝 メモを編集</button>
     </div>
@@ -183,12 +186,12 @@
 </div>
 
 <!-- MEMO MODAL -->
-<div class="overlay" id="memo-overlay" onclick="closeMemoEdit()">
+<div class="overlay" id="memo-overlay" onclick="overlayTap(event,true)">
   <div class="sheet" id="memo-sheet" onclick="event.stopPropagation()" style="padding-bottom:60px;">
     <div class="sheet-handle"></div>
     <div style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:12px;">📝 メモを編集</div>
-    <div style="font-size:11px;color:var(--text-dim);margin-bottom:8px;">部屋番号や特記事項などを入力してください</div>
-    <textarea id="memo-input"
+    <div style="font-size:13px;color:var(--text-dim);margin-bottom:8px;">部屋番号や特記事項などを入力してください</div>
+    <textarea id="memo-input" maxlength="300"
       style="width:100%;height:100px;padding:12px;border:1.5px solid var(--border);border-radius:10px;font-size:16px;font-family:inherit;color:var(--text);background:white;resize:none;outline:none;line-height:1.6;"
       placeholder="例：101・203・305号室"></textarea>
     <div class="btn-row" style="margin-top:12px;">
@@ -230,7 +233,6 @@ const MAP_IMAGES = {
 };
 
 // ページ全体のピンチズーム/二本指ジェスチャーを確実に防止する
-// (Safariは touch-action だけでは防ぎきれないケースがあるため保険として追加)
 document.addEventListener('gesturestart', e => e.preventDefault());
 document.addEventListener('gesturechange', e => e.preventDefault());
 document.addEventListener('gestureend', e => e.preventDefault());
@@ -238,32 +240,60 @@ document.addEventListener('touchmove', e => {
   if (e.touches.length > 1) e.preventDefault();
 }, { passive: false });
 
-// STATE
+// ===== STATE =====
 const wrap = document.getElementById('map-wrap');
 const canvas = document.getElementById('map-canvas');
-let sc=1, tx=0, ty=0;
+const mapImg = document.getElementById('map-img');
+let sc=1, tx=0, ty=0, lastFit=1;
 let markerSize = 32;
+try { const s=Number(localStorage.getItem('markerSize')); if(s>=20 && s<=52) markerSize=s; } catch(e){}
+document.getElementById('size-slider').value = markerSize;
 let markers = [];
-let currentMapKey = 'map1';
-let selectedId = null;
+let currentMapKey = MAPS[0].key;
+let selectedId = null;   // 開いているマークのID
+let draft = null;        // まだ保存していない「新規マーク候補」
 let deletingId = null;
-let nextId = 1;
-let isSaving = false;  // API保存中フラグ（ポーリングとは独立）
-let isBusy = false;   // ポーリング実行中フラグ
-let savedSc = null, savedTx = 0, savedTy = 0;  // メモ編集前のズーム状態保存
+let loaded = false;      // 初回読み込み完了フラグ
+let isBusy = false;      // ポーリング実行中
+let mutGen = 0;          // ローカル変更のたびに増やす（古い同期結果を捨てる判定用）
+let savedSc = null, savedTx = 0, savedTy = 0;  // メモ編集前のズーム状態
+let popupTimer = null, memoTimer = null;
 
-// ZOOM & PAN
+// ===== 書き込みキュー（順番に1件ずつ送る） =====
+let queue = Promise.resolve();
+let pending = 0;
+function enqueue(task) {
+  pending++;
+  const p = queue.then(task);
+  queue = p.catch(()=>{});
+  return p.finally(()=>{ pending--; });
+}
+function newId() {
+  // 端末ごとに重ならないよう、時刻＋乱数で数値IDを作る
+  let id;
+  do { id = Date.now()*100 + Math.floor(Math.random()*100); } while(markers.some(m=>m.id===id));
+  return id;
+}
+function validMemo(s) {
+  return !!(s && String(s).trim() && s !== 'undefined' && s !== 'null');
+}
+
+// ===== ZOOM & PAN =====
 let ptrs = {};
-let pinchStartDist=0, pinchStartSc=1;
+let pinchStartDist=0, pinchStartSc=1, lastMid=null;
 let panStartTx=0, panStartTy=0;
 let tapX=0, tapY=0, tapTime=0;
 let isPinching=false;
 let lastTapTime=0, lastTapX=0, lastTapY=0;
-const TAP_DIST=10, TAP_MS=320;
+let tapTimer=null;
+const TAP_DIST=10, TAP_MS=600, DBL_MS=350;
+let pinchEndTime = 0;
+const PINCH_COOLDOWN = 300;
 
+let rafId = 0;
 function applyXform() {
   canvas.style.transform = `translate(${tx}px,${ty}px) scale(${sc})`;
-  repositionAll();
+  if(!rafId) rafId = requestAnimationFrame(()=>{ rafId=0; repositionAll(); });
 }
 function clamp() {
   const wr=wrap.getBoundingClientRect();
@@ -289,30 +319,43 @@ function zoomAt(cx,cy,newSc) {
 function resetZoom() {
   const wr=wrap.getBoundingClientRect();
   const iw=canvas.offsetWidth, ih=canvas.offsetHeight;
+  if(!iw||!ih) return;   // 画像の読み込み前は何もしない
   sc=Math.min(wr.width/iw,wr.height/ih);
+  lastFit=sc;
   tx=(wr.width-iw*sc)/2; ty=(wr.height-ih*sc)/2;
   applyXform();
 }
-
-let pinchEndTime = 0;  // ピンチ終了時刻
-const PINCH_COOLDOWN = 300; // ピンチ後のパン抑制時間(ms)
+function resetPointerState() {
+  ptrs={}; isPinching=false; pinchEndTime=Date.now(); lastMid=null;
+  lastTapTime=0; clearTimeout(tapTimer); tapTimer=null;
+}
+function onViewportChange() {
+  if(memoOpen) return;   // キーボード表示中は動かさない
+  const f=fitScale();
+  if(Math.abs(sc-lastFit)<0.001) { resetZoom(); }
+  else { sc=Math.max(sc,f); lastFit=f; clamp(); applyXform(); }
+}
+window.addEventListener('resize', onViewportChange);
+window.addEventListener('orientationchange', ()=>setTimeout(onViewportChange,300));
 
 wrap.addEventListener('pointerdown', e=>{
   e.preventDefault();
-  wrap.setPointerCapture(e.pointerId);
+  if(Object.keys(ptrs).length>=2) return;   // 3本目以降の指は無視
+  try { wrap.setPointerCapture(e.pointerId); } catch(_) {}
   ptrs[e.pointerId]={x:e.clientX,y:e.clientY};
   const n=Object.keys(ptrs).length;
   if(n===1){
     tapX=e.clientX; tapY=e.clientY; tapTime=Date.now();
-    // ピンチ直後はパン開始位置をリセット（現在位置から開始）
     panStartTx=tx; panStartTy=ty;
     isPinching=false;
   }
   if(n===2){
     isPinching=true;
+    clearTimeout(tapTimer); tapTimer=null; lastTapTime=0;   // 予約中のタップは取り消す
     const [a,b]=Object.values(ptrs);
-    pinchStartDist=Math.hypot(a.x-b.x,a.y-b.y);
+    pinchStartDist=Math.max(1,Math.hypot(a.x-b.x,a.y-b.y));
     pinchStartSc=sc;
+    lastMid={x:(a.x+b.x)/2,y:(a.y+b.y)/2};
   }
 },{passive:false});
 
@@ -321,13 +364,18 @@ wrap.addEventListener('pointermove', e=>{
   ptrs[e.pointerId]={x:e.clientX,y:e.clientY};
   const vals=Object.values(ptrs);
   if(vals.length===2){
-    // ピンチズーム
     const [a,b]=vals;
     const dist=Math.hypot(a.x-b.x,a.y-b.y);
-    zoomAt((a.x+b.x)/2,(a.y+b.y)/2,pinchStartSc*dist/pinchStartDist);
+    const mid={x:(a.x+b.x)/2,y:(a.y+b.y)/2};
+    zoomAt(mid.x,mid.y,pinchStartSc*dist/pinchStartDist);
+    if(lastMid){ tx+=mid.x-lastMid.x; ty+=mid.y-lastMid.y; clamp(); applyXform(); }  // 二本指での移動
+    lastMid=mid;
   } else if(vals.length===1){
-    // ピンチ直後のパンは無視（クールダウン期間）
-    if(Date.now()-pinchEndTime < PINCH_COOLDOWN) return;
+    if(Date.now()-pinchEndTime < PINCH_COOLDOWN){
+      // クールダウン中は基準点を更新し続ける（解除後に地図が飛ばないように）
+      tapX=e.clientX; tapY=e.clientY; panStartTx=tx; panStartTy=ty;
+      return;
+    }
     tx=panStartTx+(e.clientX-tapX);
     ty=panStartTy+(e.clientY-tapY);
     clamp(); applyXform();
@@ -340,212 +388,201 @@ wrap.addEventListener('pointerup', e=>{
   delete ptrs[e.pointerId];
   const remaining = Object.keys(ptrs).length;
 
-  // 2本指→1本指になった瞬間：ピンチ終了を記録
   if(wasTwo && remaining === 1){
     pinchEndTime = Date.now();
-    isPinching = true; // まだピンチ中扱い
-    // 残った1本指のパン開始位置を現在位置にリセット
+    isPinching = true; lastMid=null;
     const rem = Object.values(ptrs)[0];
     tapX = rem.x; tapY = rem.y;
     panStartTx = tx; panStartTy = ty;
     return;
   }
-
   if(had && remaining===0){
-    // 全指離れた
     const wasPinch = isPinching;
     isPinching = false;
-    if(wasPinch){
-      pinchEndTime = Date.now();
-      return; // ピンチ後はタップ判定しない
-    }
+    if(wasPinch){ pinchEndTime = Date.now(); return; }
     const moved=Math.hypot(e.clientX-tapX,e.clientY-tapY);
     const elapsed=Date.now()-tapTime;
-    if(moved<TAP_DIST && elapsed<TAP_MS){
-      const now=Date.now();
-      const dtDist=Math.hypot(e.clientX-lastTapX,e.clientY-lastTapY);
-      if(now-lastTapTime<350 && dtDist<30){
-        resetZoom();
-        lastTapTime=0; // シングルタップ判定をキャンセル
-      } else {
-        lastTapTime=now; lastTapX=e.clientX; lastTapY=e.clientY;
-        const cx=e.clientX, cy=e.clientY;
-        // ダブルタップ予約中はシングルタップを遅延判定
-        setTimeout(()=>{
-          // lastTapTimeが0になっていればダブルタップが発動済みなのでスキップ
-          if(lastTapTime!==0 && Date.now()-lastTapTime>=300) handleTap(cx,cy);
-        },320);
-      }
-    }
+    if(moved<TAP_DIST && elapsed<TAP_MS) onTap(e.clientX,e.clientY);
   }
 },{passive:true});
 
 wrap.addEventListener('pointercancel',e=>{
   delete ptrs[e.pointerId];
-  if(Object.keys(ptrs).length===0){ isPinching=false; pinchEndTime=Date.now(); }
+  if(Object.keys(ptrs).length===0){ isPinching=false; pinchEndTime=Date.now(); lastMid=null; }
+  else {
+    const rem=Object.values(ptrs)[0];
+    tapX=rem.x; tapY=rem.y; panStartTx=tx; panStartTy=ty;
+  }
 },{passive:true});
 wrap.addEventListener('wheel',e=>{ e.preventDefault(); zoomAt(e.clientX,e.clientY,sc*(e.deltaY<0?1.12:0.9)); },{passive:false});
 
-// TAP
-async function handleTap(cx,cy) {
+// ===== TAP =====
+function onTap(cx,cy) {
+  if(!loaded){ showToast('読み込み中です。少しお待ちください'); return; }
   const wr=wrap.getBoundingClientRect();
   const hit=findMarker(cx-wr.left, cy-wr.top);
-  if(hit!==null){ openPopup(hit); return; }
+  if(hit!==null){
+    clearTimeout(tapTimer); tapTimer=null; lastTapTime=0;
+    openPopup(hit);   // マークは待たずにすぐ開く
+    return;
+  }
+  const now=Date.now();
+  if(tapTimer && now-lastTapTime<DBL_MS && Math.hypot(cx-lastTapX,cy-lastTapY)<30){
+    clearTimeout(tapTimer); tapTimer=null; lastTapTime=0;
+    resetZoom();   // ダブルタップ＝全体表示
+    return;
+  }
+  // 地図上の位置と地図の種類は、タップした瞬間に確定する
   const px=((cx-wr.left-tx)/sc/canvas.offsetWidth)*100;
   const py=((cy-wr.top-ty)/sc/canvas.offsetHeight)*100;
-  // ローカルにすぐ追加してポップアップ表示
-  const id=nextId++;
-  const m={id,px,py,size:markerSize,visited:false,mapKey:currentMapKey,memo:''};
-  markers.push(m);
-  openPopup(id);
-  // バックグラウンドで保存
-  isSaving=true;
-  try {
-    await apiCall({action:'add',id,name:'',address:'',
-      px:px.toFixed(3),py:py.toFixed(3),
-      mapKey:currentMapKey,size:markerSize,memo:''});
-  } catch(e) {
-    // 保存失敗時はローカルからも削除
-    markers=markers.filter(m=>m.id!==id);
-    showToast('⚠️ 保存に失敗しました。もう一度タップしてください');
-  } finally {
-    isSaving=false;
-  }
+  const mapKey=currentMapKey;
+  lastTapTime=now; lastTapX=cx; lastTapY=cy;
+  clearTimeout(tapTimer);
+  tapTimer=setTimeout(()=>{
+    tapTimer=null; lastTapTime=0;
+    if(currentMapKey!==mapKey) return;
+    if(Object.keys(ptrs).length>0) return;           // 次の操作が始まっていたら何もしない
+    if(px<0||px>100||py<0||py>100) return;           // 地図の外は無視
+    openDraft(px,py,mapKey);
+  }, DBL_MS+10);
 }
 
-// API
+// ===== API =====
 async function api(params, retries = 2) {
   const url = API + '?' + new URLSearchParams(params);
   for (let attempt = 0; attempt <= retries; attempt++) {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10秒でタイムアウト
+    const timeoutId = setTimeout(() => controller.abort(), 10000);
     try {
       const res = await fetch(url, {redirect:'follow', signal: controller.signal});
       clearTimeout(timeoutId);
-      if (res.ok) return res;
-      // ステータス異常 → リトライ対象
+      if (res.ok) {
+        if (params.action !== 'getAll') {
+          // 書き込みの場合は、サーバーがエラーを返していないかも確認する
+          let j=null;
+          try { j = JSON.parse(await res.clone().text()); } catch(_) {}
+          if (j && typeof j==='object' && !Array.isArray(j) && (j.error || j.ok===false || j.success===false)) {
+            throw new Error('server error');
+          }
+        }
+        return res;
+      }
     } catch (e) {
       clearTimeout(timeoutId);
-      // タイムアウト・通信失敗 → リトライ対象
     }
     if (attempt < retries) {
-      await new Promise(r => setTimeout(r, 1000)); // 1秒待って再試行
+      await new Promise(r => setTimeout(r, 1000 * (attempt+1)));
     }
   }
   throw new Error('Network error after retries');
 }
+
+function isVisibleHere(m) { return m.visited && m.mapKey===currentMapKey; }
+function syncMarkerEl(m) {
+  if(isVisibleHere(m)) renderMarker(m); else removeMarkerEl(m.id);
+}
+
 async function loadData() {
-  if(isBusy || isSaving) return;  // 保存中またはポーリング中はスキップ
+  if(isBusy || pending>0) return;   // 保存中・取得中は取得しない
   isBusy=true;
+  const gen=mutGen;
   try {
     const r=await api({action:'getAll'});
     const data=await r.json();
-    // サーバーデータで更新（差分更新）
-    const serverIds = new Set(data.map(row=>Number(row.id)));
-    // サーバーにないローカルマーカーを削除
-    markers.forEach(m=>{
-      if(!serverIds.has(m.id)){ removeMarkerEl(m.id); }
-    });
-    markers=[];
-    // 現在の地図のマーカー表示をリセット
-    wrap.querySelectorAll('.marker').forEach(e=>e.remove());
+    if(!Array.isArray(data)) throw new Error('bad data');
+    // 取得中に操作があった／保存が始まった場合、この結果は古いので捨てる
+    if(gen!==mutGen || pending>0) return;
+    const byId=new Map();
     data.forEach(row=>{
-      const m={
-        id:Number(row.id),
-        px:Number(row.px),
-        py:Number(row.py),
+      if(row.id===''||row.id==null||row.px===''||row.py==='') return;
+      const id=Number(row.id), px=Number(row.px), py=Number(row.py);
+      if(!Number.isFinite(id)||!Number.isFinite(px)||!Number.isFinite(py)) return;
+      byId.set(id,{          // 同じIDが重複していれば後のものを採用
+        id, px, py,
         size:Number(row.size)||32,
         visited:row.visited===true||String(row.visited).toUpperCase()==='TRUE',
         mapKey:String(row.mapKey||'map1'),
-        memo:String(row.memo||'')
-      };
-      markers.push(m);
-      if(m.visited && m.mapKey===currentMapKey) renderMarker(m);
+        memo:validMemo(row.memo)?String(row.memo):''
+      });
     });
-    nextId=markers.length>0?Math.max(...markers.map(m=>m.id))+1:1;
+    markers=[...byId.values()];
+    // 画面のマーカーを差分で更新（ちらつき防止）
+    const keep=new Set(markers.filter(isVisibleHere).map(m=>m.id));
+    wrap.querySelectorAll('.marker').forEach(el=>{
+      if(!keep.has(Number(el.id.slice(3)))) el.remove();
+    });
+    markers.filter(isVisibleHere).forEach(renderMarker);
+    loaded=true;
+    // 開いているマークが他の人に削除されていたら閉じる
+    if(selectedId!==null && !markers.some(m=>m.id===selectedId)){
+      if(memoOpen) closeMemoEdit();
+      closePopup();
+      showToast('このマークは他の方が変更しました');
+    }
     setSyncOk(); updateStats();
   } catch(e){ setSyncErr(); }
   finally { isBusy=false; }
 }
-async function apiCall(params) {
-  try{ await api(params); }
-  catch(e){
-    showToast('⚠️ 通信に失敗しました（3回再試行済み）');
-    throw e; // 呼び出し元でも失敗を検知できるようにする
-  }
-}
 async function startPolling() {
   while (true) {
-    if (!isSaving) {
-      await loadData();
-    }
-    await new Promise(r => setTimeout(r, 8000)); // 完了後に8秒待ってから次回実行
+    if (!document.hidden) await loadData();
+    await new Promise(r => setTimeout(r, 8000));
   }
 }
+document.addEventListener('visibilitychange',()=>{ if(!document.hidden) loadData(); });
 function setSyncOk() {
   document.getElementById('sync-bar').className='sync-bar ok';
   document.getElementById('sync-dot').className='sync-dot ok';
-  document.getElementById('sync-txt').textContent='同期中 — 10秒ごとに自動更新';
+  document.getElementById('sync-txt').textContent='同期中 — 数秒ごとに自動更新';
 }
 function setSyncErr() {
   document.getElementById('sync-bar').className='sync-bar err';
   document.getElementById('sync-dot').className='sync-dot err';
-  document.getElementById('sync-txt').textContent='接続エラー — 再読み込みしてください';
+  document.getElementById('sync-txt').textContent='接続エラー — 自動で再接続します';
 }
 
-// MAP SELECTOR
+// ===== MAP SELECTOR =====
 function buildSelector() {
-  document.getElementById('map-selector').innerHTML=MAPS.map(m=>
+  const sel=document.getElementById('map-selector');
+  sel.innerHTML=MAPS.map(m=>
     `<button class="map-btn ${m.key===currentMapKey?'active':''}" onclick="switchMap('${m.key}')">${m.label}</button>`
   ).join('');
+  const a=sel.querySelector('.active');
+  if(a && a.scrollIntoView) a.scrollIntoView({inline:'center',block:'nearest'});
 }
 function switchMap(key) {
+  if(!MAP_IMAGES[key]) return;
   currentMapKey=key;
+  resetPointerState();
   const m=MAPS.find(m=>m.key===key);
-  document.getElementById('map-img').src=MAP_IMAGES[key];
+  mapImg.src=MAP_IMAGES[key];
   document.getElementById('header-sub').textContent=m?.label||'';
   buildSelector();
-  // 現在の地図のマーカーだけ表示
   wrap.querySelectorAll('.marker').forEach(e=>e.remove());
-  markers.filter(m=>m.visited && m.mapKey===currentMapKey).forEach(m=>renderMarker(m));
+  markers.filter(isVisibleHere).forEach(m=>renderMarker(m));
   resetZoom();
   updateStats();
 }
 
-// MARKERS
-function addMarker(px,py,visited) {
-  const m={id:nextId++,px,py,size:markerSize,visited,mapKey:currentMapKey,memo:''};
-  markers.push(m);
-  if(m.visited) renderMarker(m);
-  return m.id;
-}
-
+// ===== MARKERS =====
 function renderMarker(m) {
   let el=document.getElementById('mk-'+m.id);
   if(!el) {
     el=document.createElement('div');
     el.id='mk-'+m.id;
-    el.addEventListener('pointerup',e=>{
-      e.stopPropagation();
-      const moved=Math.hypot(e.clientX-tapX,e.clientY-tapY);
-      const elapsed=Date.now()-tapTime;
-      if(moved<TAP_DIST && elapsed<TAP_MS && !isPinching) openPopup(m.id);
-    },{passive:true});
     wrap.appendChild(el);
   }
-  el.className = 'marker visited' + (!!(m.memo && m.memo.trim() && m.memo !== 'undefined' && m.memo !== 'null') ? ' has-memo' : '');
-  const hasMemo2 = el.classList.contains('has-memo');
-  el.style.width=m.size+'px'; el.style.height=m.size+'px';
-  const strokeColor = hasMemo2 ? '#3a2e1e' : 'white';
-  el.innerHTML=`<svg viewBox="0 0 24 24" width="${m.size*0.55}" height="${m.size*0.55}" fill="none" stroke="${strokeColor}" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="4,13 9,18 20,7"/></svg>`;
+  const hasMemo=validMemo(m.memo);
+  el.className = 'marker visited' + (hasMemo ? ' has-memo' : '') + (m.pending ? ' pending' : '');
+  el.style.width=markerSize+'px'; el.style.height=markerSize+'px';
+  const strokeColor = hasMemo ? '#3a2e1e' : 'white';
+  el.innerHTML=`<svg viewBox="0 0 24 24" width="${markerSize*0.55}" height="${markerSize*0.55}" fill="none" stroke="${strokeColor}" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="4,13 9,18 20,7"/></svg>`;
   reposition(m);
 }
-
 function removeMarkerEl(id) {
   const el=document.getElementById('mk-'+id);
   if(el) el.remove();
 }
-
 function reposition(m) {
   const el=document.getElementById('mk-'+m.id);
   if(!el) return;
@@ -553,27 +590,56 @@ function reposition(m) {
   const y=ty+(m.py/100)*canvas.offsetHeight*sc;
   el.style.left=x+'px'; el.style.top=y+'px';
 }
-
 function repositionAll() {
-  markers.filter(m=>m.visited && m.mapKey===currentMapKey).forEach(m=>reposition(m));
+  markers.filter(isVisibleHere).forEach(m=>reposition(m));
 }
-
 function findMarker(wx,wy) {
-  const current=markers.filter(m=>m.visited && m.mapKey===currentMapKey);
+  const current=markers.filter(isVisibleHere);
   for(let i=current.length-1;i>=0;i--){
     const m=current[i];
     const x=tx+(m.px/100)*canvas.offsetWidth*sc;
     const y=ty+(m.py/100)*canvas.offsetHeight*sc;
-    if(Math.hypot(wx-x,wy-y)<m.size/2+10) return m.id;
+    if(Math.hypot(wx-x,wy-y)<markerSize/2+10) return m.id;
   }
   return null;
 }
+function setMarkerSize(v) {
+  markerSize=Number(v);
+  try { localStorage.setItem('markerSize', String(markerSize)); } catch(e){}
+  markers.filter(isVisibleHere).forEach(renderMarker);   // いま表示中のマークにもすぐ反映
+}
 
-// POPUP
+// ===== POPUP =====
+let popupOpenedAt=0;
+function overlayTap(e, isMemo) {
+  // 背景をタップしたときだけ閉じる。開いた直後(0.4秒以内)は、同じタップの余波で
+  // 発生する「ゴーストクリック」で閉じてしまわないよう無視する
+  if(e.target!==e.currentTarget) return;
+  if(Date.now()-popupOpenedAt<400) return;
+  if(isMemo) tryCloseMemo(); else closePopup();
+}
+function showPopup() {
+  popupOpenedAt=Date.now();
+  clearTimeout(popupTimer);
+  document.getElementById('overlay').style.display='block';
+  requestAnimationFrame(()=>{ document.getElementById('sheet').style.transform='translateY(0)'; });
+}
+function refreshPopupMemo(m) {
+  const memoDisplay=document.getElementById('memo-display');
+  const memoBtn=document.getElementById('memo-btn');
+  if(validMemo(m.memo)){
+    memoDisplay.style.display='block';
+    memoDisplay.textContent='📝 '+m.memo.trim();
+    memoBtn.textContent='📝 メモを編集';
+  } else {
+    memoDisplay.style.display='none';
+    memoBtn.textContent='📝 メモを追加';
+  }
+}
 function openPopup(id) {
-  selectedId=id;
   const m=markers.find(m=>m.id===id);
   if(!m) return;
+  selectedId=id; draft=null;
   const pill=document.getElementById('status-pill');
   const dot=document.getElementById('status-dot');
   const txt=document.getElementById('status-txt');
@@ -585,56 +651,66 @@ function openPopup(id) {
     pill.className='status-pill unvisited'; dot.style.background='var(--orange)';
     txt.textContent='未訪問'; btn.className='btn btn-visit'; btn.textContent='✓ 訪問済にする';
   }
-  // メモ表示
-  const memoDisplay=document.getElementById('memo-display');
-  const memoBtn=document.getElementById('memo-btn');
-  const validMemo = m.memo && m.memo.trim() !== '' && m.memo !== 'undefined' && m.memo !== 'null';
-  if(validMemo){
-    memoDisplay.style.display='block';
-    memoDisplay.textContent='📝 '+m.memo.trim();
-    memoBtn.textContent='📝 メモを編集';
-  } else {
-    m.memo = '';
-    memoDisplay.style.display='none';
-    memoBtn.textContent='📝 メモを追加';
-  }
-  const ov=document.getElementById('overlay');
-  const sh=document.getElementById('sheet');
-  ov.style.display='block';
-  requestAnimationFrame(()=>{sh.style.transform='translateY(0)';});
+  document.getElementById('sub-row').style.display='flex';
+  refreshPopupMemo(m);
+  showPopup();
+}
+function openDraft(px,py,mapKey) {
+  // まだ保存しない。「訪問済にする」を押した時に初めてマークを作る
+  draft={px,py,mapKey}; selectedId=null;
+  document.getElementById('status-pill').className='status-pill unvisited';
+  document.getElementById('status-dot').style.background='var(--orange)';
+  document.getElementById('status-txt').textContent='ここを訪問済みにしますか？';
+  const btn=document.getElementById('action-btn');
+  btn.className='btn btn-visit'; btn.textContent='✓ 訪問済にする';
+  document.getElementById('memo-display').style.display='none';
+  document.getElementById('sub-row').style.display='none';
+  showPopup();
 }
 function closePopup() {
   document.getElementById('sheet').style.transform='translateY(100%)';
-  setTimeout(()=>{document.getElementById('overlay').style.display='none';},300);
-  selectedId=null;
-  // ポインター状態を完全リセット
-  ptrs={};
-  isPinching=false;
-  pinchEndTime=Date.now();
-  lastPinchDist=0;
-  lastTapTime=0;
-  lastTapX=0;
-  lastTapY=0;
+  clearTimeout(popupTimer);
+  popupTimer=setTimeout(()=>{document.getElementById('overlay').style.display='none';},300);
+  selectedId=null; draft=null;
+  resetPointerState();
 }
 
-async function doAction() {
+function createVisited(d) {
+  const id=newId();
+  const m={id,px:d.px,py:d.py,size:markerSize,visited:true,mapKey:d.mapKey,memo:'',pending:true};
+  markers.push(m); mutGen++;
+  syncMarkerEl(m); updateStats();
+  enqueue(async()=>{
+    await api({action:'add',id,name:'',address:'',
+      px:d.px.toFixed(3),py:d.py.toFixed(3),
+      mapKey:d.mapKey,size:markerSize,memo:'',visited:'true'});
+    await api({action:'update',id,visited:'true',time:''});
+  }).then(()=>{
+    m.pending=false; syncMarkerEl(m);
+    showToast('✅ 訪問済みにしました');
+  }).catch(()=>{
+    markers=markers.filter(x=>x.id!==id); mutGen++;
+    removeMarkerEl(id); updateStats();
+    showToast('⚠️ 保存に失敗しました。もう一度タップしてください',4000);
+  });
+}
+
+function doAction() {
+  if(draft){ const d=draft; closePopup(); createVisited(d); return; }
   if(selectedId===null) return;
   const m=markers.find(m=>m.id===selectedId);
-  if(!m) return;
-  const newVisited = !m.visited;
+  if(!m){ closePopup(); showToast('このマークは他の方が変更しました'); return; }
+  const old=m.visited, newVisited=!old;
   closePopup();
-  showToast('保存中...');
-  isSaving=true;
-  try {
-    await apiCall({action:'update',id:m.id,visited:newVisited?'true':'false',time:''});
-    // 保存完了後にUI更新
-    m.visited=newVisited;
-    if(newVisited){ renderMarker(m); } else { removeMarkerEl(m.id); }
-    updateStats();
-    showToast(newVisited?'✅ 訪問済みにしました':'↩ 未訪問に戻しました');
-  } catch(e) {
-    showToast('⚠️ 保存に失敗しました。もう一度お試しください');
-  } finally { isSaving=false; }
+  m.visited=newVisited; mutGen++;
+  syncMarkerEl(m); updateStats();
+  enqueue(()=>api({action:'update',id:m.id,visited:newVisited?'true':'false',time:''}))
+    .then(()=>showToast(newVisited?'✅ 訪問済みにしました':'↩ 未訪問に戻しました'))
+    .catch(()=>{
+      const cur=markers.find(x=>x.id===m.id);
+      if(cur){ cur.visited=old; mutGen++; syncMarkerEl(cur); updateStats(); }
+      showToast('⚠️ 保存に失敗したため元に戻しました。もう一度お試しください',4000);
+    });
 }
 
 function doDelete() {
@@ -647,96 +723,113 @@ function closeConfirm() {
   document.getElementById('confirm').classList.remove('open');
   deletingId=null;
 }
-async function confirmDelete() {
-  if(!deletingId) return;
+function confirmDelete() {
+  if(deletingId===null) return;
   const id=deletingId;
-  markers=markers.filter(m=>m.id!==id);
-  removeMarkerEl(id);
-  closeConfirm(); updateStats();
-  showToast('🗑️ マークを削除しました');
-  isSaving=true;
-  try {
-    await apiCall({action:'delete',id});
-  } finally { isSaving=false; }
+  const backup=markers.find(m=>m.id===id);
+  closeConfirm();
+  if(!backup) return;
+  markers=markers.filter(m=>m.id!==id); mutGen++;
+  removeMarkerEl(id); updateStats();
+  enqueue(()=>api({action:'delete',id}))
+    .then(()=>showToast('🗑️ マークを削除しました'))
+    .catch(()=>{
+      markers.push(backup); mutGen++;
+      syncMarkerEl(backup); updateStats();
+      showToast('⚠️ 削除に失敗したため元に戻しました',4000);
+    });
 }
 
-// STATS
+// ===== STATS =====
 function updateStats() {
-  document.getElementById('cnt-v').textContent=markers.filter(m=>m.visited).length;
+  const known=new Set(MAPS.map(m=>m.key));
+  const vis=markers.filter(m=>m.visited && known.has(m.mapKey));
+  document.getElementById('cnt-v').textContent=vis.length;
+  document.getElementById('cnt-lbl').textContent='訪問済（この地図 '+vis.filter(m=>m.mapKey===currentMapKey).length+'）';
 }
 
-// MEMO
+// ===== MEMO =====
+let memoOpen=false, memoOriginal='';
+function adjustMemoSheet() {
+  const sh=document.getElementById('memo-sheet');
+  const vv=window.visualViewport;
+  if(!memoOpen || !vv){ sh.style.bottom='0px'; return; }
+  // キーボードの高さぶんシートを持ち上げ、保存ボタンが隠れないようにする
+  sh.style.bottom=Math.max(0, window.innerHeight-vv.height-vv.offsetTop)+'px';
+}
+if(window.visualViewport){
+  window.visualViewport.addEventListener('resize',adjustMemoSheet);
+  window.visualViewport.addEventListener('scroll',adjustMemoSheet);
+}
 function openMemoEdit() {
   const m=markers.find(m=>m.id===selectedId);
   if(!m) return;
-  // ズーム状態を保存（iOSが自動ズームするため）
   savedSc=sc; savedTx=tx; savedTy=ty;
-  document.getElementById('memo-input').value=m.memo||'';
-  const ov=document.getElementById('memo-overlay');
-  const sh=document.getElementById('memo-sheet');
-  ov.style.display='block';
-  requestAnimationFrame(()=>{sh.style.transform='translateY(0)';});
-  setTimeout(()=>document.getElementById('memo-input').focus(),400);
+  memoOriginal=m.memo||''; memoOpen=true;
+  const input=document.getElementById('memo-input');
+  input.value=memoOriginal;
+  clearTimeout(memoTimer);
+  popupOpenedAt=Date.now();
+  document.getElementById('memo-overlay').style.display='block';
+  try { input.focus({preventScroll:true}); } catch(e){ input.focus(); }   // タップ操作の中で直接フォーカス（iOS対策）
+  requestAnimationFrame(()=>{ document.getElementById('memo-sheet').style.transform='translateY(0)'; adjustMemoSheet(); });
+}
+function tryCloseMemo() {
+  // 背景タップで誤って入力内容が消えないよう、変更があれば確認する
+  const cur=document.getElementById('memo-input').value.trim();
+  if(cur!==memoOriginal.trim() && !window.confirm('入力した内容は保存されません。閉じますか？')) return;
+  closeMemoEdit();
 }
 function closeMemoEdit() {
+  memoOpen=false;
+  try { document.getElementById('memo-input').blur(); } catch(e){}
   const sh=document.getElementById('memo-sheet');
   sh.style.transform='translateY(100%)';
-  // メモ編集前のズーム状態を復元
+  sh.style.bottom='0px';
   if(savedSc !== null) {
     sc=savedSc; tx=savedTx; ty=savedTy;
-    applyXform();
+    clamp(); applyXform();
     savedSc=null;
   }
-  setTimeout(()=>{document.getElementById('memo-overlay').style.display='none';},300);
-  // ポインター状態を完全リセット
-  ptrs={};
-  isPinching=false;
-  pinchEndTime=Date.now();
-  lastPinchDist=0;
-  lastTapTime=0;
-  lastTapX=0;
-  lastTapY=0;
+  clearTimeout(memoTimer);
+  memoTimer=setTimeout(()=>{document.getElementById('memo-overlay').style.display='none';},300);
+  resetPointerState();
 }
-async function saveMemo() {
+function saveMemo() {
+  if(!memoOpen) return;   // 二重タップ防止
   const m=markers.find(m=>m.id===selectedId);
-  if(!m) return;
+  if(!m){ closeMemoEdit(); closePopup(); showToast('このマークは他の方が変更しました'); return; }
+  const oldMemo=m.memo;
   m.memo=document.getElementById('memo-input').value.trim();
+  const id=m.id, newMemo=m.memo;
   closeMemoEdit();
-  // メモ表示を更新
-  const memoDisplay=document.getElementById('memo-display');
-  const memoBtn=document.getElementById('memo-btn');
-  const validMemo = m.memo && m.memo.trim() !== '' && m.memo !== 'undefined' && m.memo !== 'null';
-  if(validMemo){
-    memoDisplay.style.display='block';
-    memoDisplay.textContent='📝 '+m.memo.trim();
-    memoBtn.textContent='📝 メモを編集';
-  } else {
-    m.memo = ''; // 不正な値をリセット
-    memoDisplay.style.display='none';
-    memoBtn.textContent='📝 メモを追加';
-  }
-  // マーカーの色を更新
-  renderMarker(m);
-  showToast('📝 メモを保存しました');
-  isSaving=true;
-  try {
-    await apiCall({action:'memo',id:m.id,memo:m.memo});
-  } finally { isSaving=false; }
+  mutGen++;
+  refreshPopupMemo(m);
+  syncMarkerEl(m);
+  enqueue(()=>api({action:'memo',id,memo:newMemo}))
+    .then(()=>showToast('📝 メモを保存しました'))
+    .catch(()=>{
+      const cur=markers.find(x=>x.id===id);
+      if(cur){
+        cur.memo=oldMemo; mutGen++; syncMarkerEl(cur);
+        if(selectedId===id) refreshPopupMemo(cur);
+      }
+      showToast('⚠️ メモの保存に失敗したため元に戻しました',4000);
+    });
 }
 
-// TOAST
+// ===== TOAST =====
 let toastTimer=null;
-function showToast(msg) {
+function showToast(msg, ms=2500) {
   const t=document.getElementById('toast');
   t.textContent=msg; t.classList.add('show');
   clearTimeout(toastTimer);
-  toastTimer=setTimeout(()=>t.classList.remove('show'),2500);
+  toastTimer=setTimeout(()=>t.classList.remove('show'),ms);
 }
 
-// INIT
-document.getElementById('map-img').onload=()=>{
-  resetZoom();
-};
+// ===== INIT =====
+mapImg.onload=()=>{ resetZoom(); };
+mapImg.onerror=()=>{ showToast('⚠️ 地図の画像を読み込めませんでした',4000); };
 buildSelector();
 switchMap(MAPS[0].key);
 startPolling();
